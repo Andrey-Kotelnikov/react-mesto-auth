@@ -24,4 +24,4 @@
 
 ## Ссылка на собранный проект
 
-[Mesto](https://andrey-kotelnikov.github.io/react-mesto-auth/)
+[Mesto](https://andrey-kotelnikov.github.io/mesto-react/)
