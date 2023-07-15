@@ -31,7 +31,8 @@ function Header (props) {
   function signOut() {
     console.log('sign out')
     localStorage.removeItem('token');
-    props.tokenCheck();
+    //props.tokenCheck();
+    props.toggleLoggedIn();
     navigate('/sign-in', {replace: true});
   }
 

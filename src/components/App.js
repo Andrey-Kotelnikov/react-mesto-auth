@@ -24,47 +24,61 @@ function App() {
   const [selectedCard, setSelectedCard] = React.useState({});
   const [isRegisterPopupOpen, setIsRegisterPopupOpen] = React.useState(false)
 
-  const [currentUser, setCurrentUser] = React.useState({})
+  const [currentUser, setCurrentUser] = React.useState({});
 
   const [cards, setCards] = React.useState([]);
 
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [registeredIn, setRegisteredIn] = React.useState(false);
 
-  const[userData, setUserData] = React.useState({})
+  const[userData, setUserData] = React.useState({});
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
+  const token = localStorage.getItem('token');
+
+  let registerText = registeredIn ? 'Вы успешно зарегистрировались!' : 'Что-то пошло не так! Попробуйте ещё раз.'
 
   React.useEffect(() => {
-    Promise.all([
-      api.getProfile(),
-      api.getItems()
-    ])
-      .then(([userInfo, initialCards]) => { 
-        setCurrentUser(userInfo);
-        setCards(initialCards);
-      })
-      .catch((err) => {console.log(err)})
-  }, []);
+    if (loggedIn) {
+      console.log('эффект загрузки данных')
+      Promise.all([
+        api.getProfile(),
+        api.getItems()
+      ])
+        .then(([userInfo, initialCards]) => { 
+          setCurrentUser(userInfo);
+          setCards(initialCards);
+        })
+        .catch((err) => {console.log(err)})
+    }
+  }, [loggedIn]);
 
   React.useEffect(() => {
     tokenCheck()
-  }, [loggedIn]);
+  }, []);
+
+  React.useEffect(() => {
+    //toggleLoggedIn();
+  }, [token])
+
+  function toggleLoggedIn () {
+    token ? setLoggedIn(true) : setLoggedIn(false);
+    console.log('loggedIn:' + loggedIn);
+  }
 
   function tokenCheck () {
-    const token = localStorage.getItem('token');
-    console.log('loggedIn:' + loggedIn)
+    toggleLoggedIn();
+    console.log('loggedIn:' + loggedIn);
     if (token) {
       auth.getContent(token).then((res) => {
         const userData = {
           email: res.data.email
         }
-        setLoggedIn(true);
         setUserData(userData);
         navigate('/main', {replace: true})
       })
-    } else {
-      setLoggedIn(false);
+        .catch((err) => {console.log(err)}) 
     }
   }
 
@@ -160,7 +174,7 @@ function App() {
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
-      <Header userData={userData} loggedIn={loggedIn} tokenCheck={tokenCheck} />
+      <Header userData={userData} loggedIn={loggedIn} tokenCheck={tokenCheck} toggleLoggedIn={toggleLoggedIn} />
       <Routes>
         
         <Route path='/' element={loggedIn ? <Navigate to='main' replace /> : <Navigate to='sign-in' replace />} />
@@ -187,21 +201,7 @@ function App() {
       <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddPlaceSubmit} />
       <PopupWithForm name="delete" title="Вы уверены?" buttonText="Да" />
       <ImagePopup card={selectedCard} onClose={closeAllPopups} />
-      <InfoToolTip registeredIn={registeredIn} isOpen={isRegisterPopupOpen} onClose={closeAllPopups} />
-
-      <template className="template">
-        <article className="element">
-          <img className="element__image" src="#" alt="#"/>
-          <button className="element__trash" type="button" aria-label="удалить карточку"></button>
-          <div className="element__items">
-            <h3 className="element__title"></h3>
-            <div className="element__like-container">
-              <button className="element__like" type="button" aria-label="понравилось"></button>
-              <p className="element__like-counter"></p>
-            </div>
-          </div>
-        </article>
-      </template>
+      <InfoToolTip registerText={registerText} registeredIn={registeredIn} isOpen={isRegisterPopupOpen} onClose={closeAllPopups} />
     </CurrentUserContext.Provider>
   );
 }

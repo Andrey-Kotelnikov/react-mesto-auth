@@ -22,9 +22,6 @@ function Login(props) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formValue.email || !formValue.password) {
-      return
-    }
     console.log(formValue)
     auth.login(formValue.email, formValue.password)
       .then((data) => {
@@ -40,8 +37,8 @@ function Login(props) {
   return (
     <form className="login__form" name="login-form" onSubmit={handleSubmit}>
       <h3 className="login__title">Вход</h3>
-      <input className="login__input" id="email" name="email" value={formValue.email} placeholder="Email" type="email" onChange={handleChange} />
-      <input className="login__input" id="password" name="password" value={formValue.password} placeholder="Пароль" type="password" onChange={handleChange} />
+      <input className="login__input" id="email" name="email" value={formValue.email} placeholder="Email" type="email" onChange={handleChange} required />
+      <input className="login__input" id="password" name="password" value={formValue.password} placeholder="Пароль" type="password" onChange={handleChange} required />
       <button className="login__save-button">Войти</button>
     </form>
   )
