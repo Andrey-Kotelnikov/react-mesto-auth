@@ -32,6 +32,7 @@ function Register(props) {
           props.handleRegister(false);
         }
       })
+      .catch((err) => {console.log(err)})
   }
 
   return (

@@ -23,6 +23,7 @@ function Header (props) {
   React.useEffect(() => {
     if (location.pathname === '/main') {
       setEmail(props.userData.email);
+      console.log(props.userData.email)
     } else {
       setEmail('');
     }
@@ -31,8 +32,7 @@ function Header (props) {
   function signOut() {
     console.log('sign out')
     localStorage.removeItem('token');
-    //props.tokenCheck();
-    props.toggleLoggedIn();
+    props.handleLogin(false)
     navigate('/sign-in', {replace: true});
   }
 

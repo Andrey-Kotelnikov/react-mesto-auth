@@ -22,16 +22,19 @@ function Login(props) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formValue)
     auth.login(formValue.email, formValue.password)
       .then((data) => {
         if (data.token) {
           console.log(data.token)
+          props.setUserData({
+            email: formValue.email
+          })
           setFormValue({email: '', password: ''});
           props.handleLogin(true);
           navigate('/main', {replace: true});
         }
-    })
+      })
+      .catch((err) => {console.log(err)})
   }
 
   return (

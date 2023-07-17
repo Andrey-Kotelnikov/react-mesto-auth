@@ -37,7 +37,7 @@ function App() {
 
   const token = localStorage.getItem('token');
 
-  let registerText = registeredIn ? 'Вы успешно зарегистрировались!' : 'Что-то пошло не так! Попробуйте ещё раз.'
+  const registerText = registeredIn ? 'Вы успешно зарегистрировались!' : 'Что-то пошло не так! Попробуйте ещё раз.'
 
   React.useEffect(() => {
     if (loggedIn) {
@@ -58,27 +58,19 @@ function App() {
     tokenCheck()
   }, []);
 
-  React.useEffect(() => {
-    //toggleLoggedIn();
-  }, [token])
-
-  function toggleLoggedIn () {
-    token ? setLoggedIn(true) : setLoggedIn(false);
-    console.log('loggedIn:' + loggedIn);
-  }
-
   function tokenCheck () {
-    toggleLoggedIn();
-    console.log('loggedIn:' + loggedIn);
     if (token) {
       auth.getContent(token).then((res) => {
         const userData = {
           email: res.data.email
         }
         setUserData(userData);
+        setLoggedIn(true)
         navigate('/main', {replace: true})
       })
         .catch((err) => {console.log(err)}) 
+    } else {
+      //setLoggedIn(false)
     }
   }
 
@@ -174,13 +166,12 @@ function App() {
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
-      <Header userData={userData} loggedIn={loggedIn} tokenCheck={tokenCheck} toggleLoggedIn={toggleLoggedIn} />
+      <Header userData={userData} loggedIn={loggedIn} handleLogin={handleLogin} />
       <Routes>
-        
         <Route path='/' element={loggedIn ? <Navigate to='main' replace /> : <Navigate to='sign-in' replace />} />
-
-        <Route path='/sign-in' element={<Login handleLogin={handleLogin} />} />
+        <Route path='/sign-in' element={<Login handleLogin={handleLogin} setUserData={setUserData} />} />
         <Route path='/sign-up' element={<Register handleRegister={handleRegister} />} />
+        
         <Route path='/main' element={<ProtectedRoute
           element={Main}
           loggedIn={loggedIn}
@@ -192,7 +183,6 @@ function App() {
           onCardLike={handleLikeCard}
           onCardDelete={handleCardDelete}
         />} />
-
       </Routes>
       <Footer />
 
